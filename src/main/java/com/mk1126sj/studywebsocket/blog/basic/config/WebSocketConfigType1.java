@@ -1,11 +1,11 @@
-package com.mk1126sj.studywebsocket.chatt;
+package com.mk1126sj.studywebsocket.blog.basic.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 
 @Component
-public class WebSocketConfig {
+public class WebSocketConfigType1 {
     /**
      * 싱글톤으로 동작하도록 하기 위한 설정
      *

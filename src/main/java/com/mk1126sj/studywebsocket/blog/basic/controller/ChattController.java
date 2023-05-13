@@ -1,4 +1,4 @@
-package com.mk1126sj.studywebsocket.controller;
+package com.mk1126sj.studywebsocket.blog.basic.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,7 +12,7 @@ public class ChattController {
     @RequestMapping("/mychatt")
     public ModelAndView chatt() {
         ModelAndView mv = new ModelAndView();
-        mv.setViewName("chatt/chatting");
+        mv.setViewName("basic/chatting");
         return mv;
     }
 }

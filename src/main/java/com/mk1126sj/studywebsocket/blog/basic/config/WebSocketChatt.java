@@ -1,4 +1,4 @@
-package com.mk1126sj.studywebsocket.chatt;
+package com.mk1126sj.studywebsocket.blog.basic.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

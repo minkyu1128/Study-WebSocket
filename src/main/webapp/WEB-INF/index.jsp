@@ -11,6 +11,13 @@
     <title>Title</title>
 </head>
 <body>
-<a href="http://localhost:9999/mychatt">채팅방으로 이동</a>
+<ul>
+    <li>
+        <a href="http://localhost:9999/mychatt">채팅방으로 이동</a>
+    </li>
+    <li>
+        <a href="http://localhost:9999/chat">채팅방 이동</a>
+    </li>
+</ul>
 </body>
 </html>

@@ -1,4 +1,4 @@
-package com.mk1126sj.studywebsocket.controller;
+package com.mk1126sj.studywebsocket;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -9,7 +9,7 @@
 <html>
 <head>
     <title>Title</title>
-    <link rel='stylesheet' type='text/css' href='./css/chatt.css'>
+    <link rel='stylesheet' type='text/css' href='./css/chat-room.css'>
 </head>
 <body>
 <div id='chatt'>
@@ -23,6 +23,6 @@
         <input type='button' value='전송' id='btnSend'>
     </div>
 </div>
-<script src='./js/chatt.js'></script>
+<script src='./js/chatting.js'></script>
 </body>
 </html>
