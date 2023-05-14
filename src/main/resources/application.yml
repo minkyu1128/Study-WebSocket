@@ -7,7 +7,7 @@ spring:
   ## WEB MVC ??
   mvc:
     ## ?? Resource ??
-#    static-path-pattern: /resources/**
+    #    static-path-pattern: /resources/**
     ## Servlet ??? ? ???
     view:
       prefix: /WEB-INF/

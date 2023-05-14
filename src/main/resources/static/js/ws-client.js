@@ -18,12 +18,33 @@ class WsClient {
         if (!WsClient.isBlank(props.onError)) this.onError = props.onError;
     }
 
+    /* ==============================================================================
+     * STATIC METHODS
+     ============================================================================== */
     static isBlank(value) {
         if (value == undefined || value == null || value == '' || value == ' ')
             return true;
         return false;
     }
 
+    static wsType = {
+        WS: 'WebSocket',
+        WSS: 'WebSocket SSH',
+        SJ: 'WebSocket SockJS',
+
+        valueOf(value) {
+            if (WsClient.isBlank(WsClient.wsType[value])) {
+                alert('no matching value');
+                return false;
+            }
+            return WsClient.wsType[value];
+        }
+    }
+
+
+    /* ==============================================================================
+     * INSTANCE METHODS
+     ============================================================================== */
     setWsType(wsType) {
         this.wsType = wsType;
     }
@@ -32,64 +53,94 @@ class WsClient {
         this.serverEndPoint = serverEndPoint;
     }
 
-    //WebSocket Connection
+    /**
+     * Connection WebSocket
+     */
     open() {
-        if (this.wsType === 'ws')
+        if (this.wsType === WsClient.wsType.WS)
             this.ws = new WebSocket("ws://" + this.serverEndPoint + "?type=WS");
-        else if (this.wsType === 'wss')
+        else if (this.wsType === WsClient.wsType.WSS)
             this.ws = new WebSocket("wss://" + this.serverEndPoint + "?type=WSS");
-        else if (this.wsType === 'sj')
+        else if (this.wsType === WsClient.wsType.SJ)
             this.ws = new SockJS(this.serverEndPoint + "?type=SJ", null, {transports: ["websocket", "xhr-streaming", "xhr-polling"]});
         else {
-            alert("WebSocket This call type is required!!");
-            return false;
+            throw "WebSocket This call type is required!!";
         }
+
         this.ws.onopen = this.onOpen;
         this.ws.onmessage = this.onMessage;
         this.ws.onclose = this.onClose;
         this.ws.onerror = this.onError;
     }
 
-    //WebSocket Disconnection
+    /**
+     * Disconnection WebSocket
+     */
     close() {
         this.ws.close();
     }
 
-    //Message Send
+    /**
+     * Send Message
+     * @param payload
+     * @returns {boolean}
+     */
     send(payload) {
         if (WsClient.isBlank(this.ws)) {
             alert("WebSocket is not connected!!");
-            return false;
+            throw "WebSocket is not connected!!";
         }
         if (this.enableLog) console.log('send payload', payload);
         this.payload = payload;
         this.ws.send(this.payload);
     }
 
-    //get Last Send Data
+    /**
+     * get Last Send Message Data
+     * @returns {*}
+     */
     getPayload() {
         return this.payload;
     }
 
-    //Open EventListener
+    /* ==============================================================================
+     * EVENTS
+     ============================================================================== */
+    /**
+     * Open EventListener
+     * @param msg
+     * @param ev
+     */
     onOpen(msg, ev) {
         if (this.enableLog) console.log('Unimplemented "onOpen" Function');
         if (this.enableLog) console.log('onOpen', msg, ev);
     }
 
-    //Receive EventListener
+    /**
+     * Receive EventListener
+     * @param msg
+     * @param ev
+     */
     onMessage(msg, ev) {
         if (this.enableLog) console.log('Unimplemented "onMessage" Function');
         if (this.enableLog) console.log('onMessage', msg, ev);
     }
 
-    //Close EventListener
+    /**
+     * Close EventListener
+     * @param msg
+     * @param ev
+     */
     onClose(msg, ev) {
         if (this.enableLog) console.log('Unimplemented "onClose" Function');
         if (this.enableLog) console.log('onClose', msg, ev);
     }
 
-    //Error EventListener
+    /**
+     * Error EventListener
+     * @param msg
+     * @param ev
+     */
     onError(msg, ev) {
         if (this.enableLog) console.log('Unimplemented "onError" Function');
         if (this.enableLog) console.log('onError', msg, ev);

@@ -52,7 +52,7 @@ let fncOnMessage = (message) => {
 };
 let ws = new WsClient({
     enableLog: true,
-    wsType: "ws",
+    wsType: WsClient.wsType.WS,
     serverEndPoint: document.querySelector('#serverEndPoint').value,
     onMessage: fncOnMessage
 });
@@ -71,7 +71,8 @@ let fncSend = () => {
  * Set EventListener
  */
 btnLogin.onclick = () => {
-    ws.setWsType(document.querySelector('#wsType').options[document.querySelector('#wsType').selectedIndex].value);
+    const selctedOptVal = document.querySelector('#wsType').options[document.querySelector('#wsType').selectedIndex].value;
+    ws.setWsType(WsClient.wsType.valueOf(selctedOptVal));
     ws.setServerEndPoint(document.querySelector('#serverEndPoint').value);
     ws.open(wsType);
 }

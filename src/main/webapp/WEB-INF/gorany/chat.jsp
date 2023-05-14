@@ -15,8 +15,9 @@
 <div id='chatt'>
     <h1>WebSocket 채팅 by Basic</h1>
     <select id="wsType">
-        <option value="ws">ws</option>
-        <option value="sj">ws-SockJS</option>
+        <option value="WS">ws</option>
+        <option value="SJ">ws-SockJS</option>
+        <option value="STP">ws-Stomp</option>
     </select>
     <input type='text' id='serverEndPoint' value="${header.host}/ws/chat"/>
     <br/>
@@ -32,6 +33,7 @@
 <script src='https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.4.0/sockjs.min.js'></script>
 <script src='${pageContext.servletContext.contextPath}/js/ws-client.js?ver=1'></script>
 <script src='${pageContext.servletContext.contextPath}/js/chat.js?ver=1'></script>
+<script src='${pageContext.servletContext.contextPath}/js/webstomp-client/1.2.3/webstomp.js?ver=1.2.3'></script>
 <script>
 
 </script>

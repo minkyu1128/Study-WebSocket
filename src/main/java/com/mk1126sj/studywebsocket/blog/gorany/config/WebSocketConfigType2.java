@@ -28,6 +28,7 @@ public class WebSocketConfigType2 implements WebSocketConfigurer {
         *   -. 기본적으로 CORS 는 SOP 에 의해 다른 도메인 서버에서는 접속 불가
         *   -. 모든 도메인에서 접속이 가능하도록 "*" 로 설정
         *   -. 특정 도메인만 열어주고 싶을 경우 해당 도메인만 입력
+        * -----------------------------------------------
         * SockJS란?
         *   -. 모든 클라이언트의 브라우저에서 WebSocket을 지원한다는 보장이 없다.
         *   -. 또한, Server/Client 중간에 위치한 Proxy가 Upgrade 헤더를 해석하지 못해 서버에 전달하지 못할 수 있다.
@@ -42,7 +43,7 @@ public class WebSocketConfigType2 implements WebSocketConfigurer {
         ;
         //WebSocketHandler By SockJS
         final String sockJsClientUrl = "https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.4.0/sockjs.min.js";
-        registry.addHandler(sockJsChatHandler, "/ws/sj/chat")    //ServerEndpoint
+        registry.addHandler(sockJsChatHandler, "/sj/chat")    //ServerEndpoint
 //                .setAllowedOrigins("*") //CORS 시 모든 도메인에서 접근 가능하도록 설정
                 .setAllowedOriginPatterns("http://*:" + SERVER_PORT, "http://*.*.*.*:" + SERVER_PORT)
                 .withSockJS()  //SockJS 활성화

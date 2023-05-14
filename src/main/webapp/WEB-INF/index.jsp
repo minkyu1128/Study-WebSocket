@@ -18,6 +18,9 @@
     <li>
         <a href="http://localhost:9999/chat">채팅방 이동</a>
     </li>
+    <li>
+        <a href="http://localhost:9999/chat/rooms">채팅방 목록으로 이동</a>
+    </li>
 </ul>
 </body>
 </html>
