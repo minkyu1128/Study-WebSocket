@@ -49,3 +49,9 @@
     background-color: #eee;
     margin: 2px;
 }
+
+#chatt #talk div.enter {
+    width: 100%;
+    background-color: #faebd7;
+    text-align: center;
+}

@@ -23,11 +23,10 @@ class StompClient {
         } : props.conn.callback;
         this.conn.sub.dest = props.conn.sub.dest;
         this.conn.sub.callback = props.conn.sub.callback;
-        console.log('props', props);
-        if (!StompClient.isBlank(props.onOpen)) this.onOpen = props.onOpen;
-        if (!StompClient.isBlank(props.onMessage)) this.onMessage = props.onMessage;
-        if (!StompClient.isBlank(props.onClose)) this.onClose = props.onClose;
-        if (!StompClient.isBlank(props.onError)) this.onError = props.onError;
+        // if (!StompClient.isBlank(props.onOpen)) this.onOpen = props.onOpen;
+        // if (!StompClient.isBlank(props.onMessage)) this.onMessage = props.onMessage;
+        // if (!StompClient.isBlank(props.onClose)) this.onClose = props.onClose;
+        // if (!StompClient.isBlank(props.onError)) this.onError = props.onError;
     }
 
     /* ==============================================================================
@@ -97,12 +96,13 @@ class StompClient {
         // this.stomp = Stomp.client("ws://" + this.serverEndPoint);
         let _instance = this;
         this.stomp = Stomp.over(this.ws);
-        console.log('_instance.conn.sub.desc', _instance.conn.sub.dest);
-        console.log('_instance.conn.sub.callback',_instance.conn.sub.callback);
         this.stomp.connect(this.conn.headers, function () {
-            _instance.stomp.subscribe(_instance.conn.sub.dest, _instance.conn.sub.callback)
-            _instance.conn.callback();
+            console.log("STOMP Connection");
+            _instance.stomp.subscribe(_instance.conn.sub.dest, (msg) => _instance.onMessage(msg));
+            _instance.onOpen();
         });
+        
+        //TODO 향후 필요 시 학습 후 아래 기능 구현
         // this.stomp.disconnect = this.disconnect;
         // this.stomp.begin = this.begin;
         // this.stomp.commit = this.commit;
@@ -114,20 +114,12 @@ class StompClient {
         // this.stomp.nack = this.nack;
     }
 
-
-    // /**
-    //  * Stomp Connection
-    //  */
-    // connect() {
-    //     this.stomp.conn();
-    // }
-
     /**
      * Stomp Disconnection
      * @param disconnectCallback
      * @param headers
      */
-    disconnect(disconnectCallback, headers) {
+    close(disconnectCallback, headers) {
         this.stomp.disconnect(disconnectCallback, headers);
     }
 
@@ -150,96 +142,6 @@ class StompClient {
         this.stomp.send(this.path, this.headers, this.payload);
     }
 
-    /**
-     * get Last Send Message Data
-     * @returns {*}
-     */
-    getPayload() {
-        return this.payload;
-    }
-
-    /**
-     * 시작
-     *  -. 트랜잭션을 시작 합니다.
-     * @param transactionId
-     */
-    begin(transactionId) {
-        this.stomp.begin(transactionId);
-    }
-
-    /**
-     * 커밋
-     *  -. 트랜잭션을 커밋 합니다.
-     *  -. 시작(begin) 시 반환된 개체를 직접 호출하여 트랜잭션을 커밋하는 것이 좋습니다.
-     * @param transactionId
-     */
-    commit(transactionId) {
-        this.stomp.commit(transactionId);
-    }
-
-    /**
-     * 중단
-     *  -. 트랜잭션을 중단 합니다.
-     *  -. 시작(begin) 시 반환된 개체를 직접 호출하여 트랜잭션을 커밋하는 것이 좋습니다.
-     * @param transactionId
-     */
-    abort(transactionId) {
-        this.stomp.abort(transactionId);
-    }
-
-    /**
-     * 디버그
-     *  -. WebSocket을 통한 STOMP 프레임의 모든 실제 전송에 대해 호출
-     * @param message
-     */
-    debug(message) {
-        this.stomp.debug(message);
-    }
-
-    /**
-     * 구독
-     *  -. 클라이언트가 서버로부터 STOMP 메시지를 수신할 때 호출됩니다.
-     * @param destination
-     * @param callback
-     * @param headers
-     */
-    subscribe(destination, callback, headers) {
-        // this.stomp.subscribe(messageID, subscription, headers);
-        if (this.enableLog) console.log('Unimplemented "subscribe" Function');
-        if (this.enableLog) console.log('subscribe', destination, callback, headers);
-    }
-
-    /**
-     * 구독 취소
-     *  -. 구독 시 반환된 개체를 직접 호출하여 구독을 취소하는 것이 좋습니다.
-     * @param id
-     */
-    unsubscribe(id) {
-        this.stomp.unsubscribe(id);
-    }
-
-    /**
-     * ack 메시지
-     *  -. 구독 callback 에 의해 처리되는 메시지를 직접 호출하여 메시지를 확인 하는 것이 좋습니다.
-     * @param messageID
-     * @param subscription
-     * @param headers
-     */
-    ack(messageID, subscription, headers) {
-        this.stomp.ack(messageID, subscription, headers);
-    }
-
-    /**
-     * nack 메시지
-     *  =. 구독 callback 에 의해 처리되는 메시지를 직접 호출하여 메시지를 확인 하는 것이 좋습니다.
-     * @param messageID
-     * @param subscription
-     * @param headers
-     */
-    nack(messageID, subscription, headers) {
-        this.stomp.nack(messageID, subscription, headers);
-    }
-
     /* ==============================================================================
      * EVENTS
      ============================================================================== */
@@ -248,9 +150,11 @@ class StompClient {
      * @param msg
      * @param ev
      */
-    onOpen(msg, ev) {
-        if (this.enableLog) console.log('Unimplemented "onOpen" Function');
-        if (this.enableLog) console.log('onOpen', msg, ev);
+    onOpen() {
+        if (this.enableLog) console.log('onOpen >>> Connection Success');
+
+        if (!StompClient.isBlank(this.conn.callback))
+            this.conn.callback();
     }
 
     /**
@@ -259,8 +163,12 @@ class StompClient {
      * @param ev
      */
     onMessage(msg, ev) {
-        if (this.enableLog) console.log('Unimplemented "onMessage" Function');
         if (this.enableLog) console.log('onMessage', msg, ev);
+
+        if (StompClient.isBlank(this.conn.sub.callback))
+            throw 'subscription callback is not defined!!';
+
+        this.conn.sub.callback(msg);
     }
 
     /**
@@ -268,7 +176,7 @@ class StompClient {
      * @param msg
      * @param ev
      */
-    onClose(msg, ev) {
+    onClose(msg) {
         if (this.enableLog) console.log('Unimplemented "onClose" Function');
         if (this.enableLog) console.log('onClose', msg, ev);
     }
@@ -282,5 +190,94 @@ class StompClient {
         if (this.enableLog) console.log('Unimplemented "onError" Function');
         if (this.enableLog) console.log('onError', msg, ev);
     }
+
+
+    // /**
+    //  * get Last Send Message Data
+    //  * @returns {*}
+    //  */
+    // getPayload() {
+    //     return this.payload;
+    // }
+    //
+    // /**
+    //  * 시작
+    //  *  -. 트랜잭션을 시작 합니다.
+    //  * @param transactionId
+    //  */
+    // begin(transactionId) {
+    //     this.stomp.begin(transactionId);
+    // }
+    //
+    // /**
+    //  * 커밋
+    //  *  -. 트랜잭션을 커밋 합니다.
+    //  *  -. 시작(begin) 시 반환된 개체를 직접 호출하여 트랜잭션을 커밋하는 것이 좋습니다.
+    //  * @param transactionId
+    //  */
+    // commit(transactionId) {
+    //     this.stomp.commit(transactionId);
+    // }
+    //
+    // /**
+    //  * 중단
+    //  *  -. 트랜잭션을 중단 합니다.
+    //  *  -. 시작(begin) 시 반환된 개체를 직접 호출하여 트랜잭션을 커밋하는 것이 좋습니다.
+    //  * @param transactionId
+    //  */
+    // abort(transactionId) {
+    //     this.stomp.abort(transactionId);
+    // }
+    //
+    // /**
+    //  * 디버그
+    //  *  -. WebSocket을 통한 STOMP 프레임의 모든 실제 전송에 대해 호출
+    //  * @param message
+    //  */
+    // debug(message) {
+    //     this.stomp.debug(message);
+    // }
+    //
+    // /**
+    //  * 구독
+    //  *  -. 클라이언트가 서버로부터 STOMP 메시지를 수신할 때 호출됩니다.
+    //  * @param destination
+    //  */
+    // subscribe(data) {
+    // this.stomp.subscribe(messageID, subscription, headers);
+    // if (this.enableLog) console.log('Unimplemented "subscribe" Function');
+    // if (this.enableLog) console.log('subscribe', destination, callback, headers);
+    // }
+    //
+    // /**
+    //  * 구독 취소
+    //  *  -. 구독 시 반환된 개체를 직접 호출하여 구독을 취소하는 것이 좋습니다.
+    //  * @param id
+    //  */
+    // unsubscribe(id) {
+    //     this.stomp.unsubscribe(id);
+    // }
+    //
+    // /**
+    //  * ack 메시지
+    //  *  -. 구독 callback 에 의해 처리되는 메시지를 직접 호출하여 메시지를 확인 하는 것이 좋습니다.
+    //  * @param messageID
+    //  * @param subscription
+    //  * @param headers
+    //  */
+    // ack(messageID, subscription, headers) {
+    //     this.stomp.ack(messageID, subscription, headers);
+    // }
+    //
+    // /**
+    //  * nack 메시지
+    //  *  =. 구독 callback 에 의해 처리되는 메시지를 직접 호출하여 메시지를 확인 하는 것이 좋습니다.
+    //  * @param messageID
+    //  * @param subscription
+    //  * @param headers
+    //  */
+    // nack(messageID, subscription, headers) {
+    //     this.stomp.nack(messageID, subscription, headers);
+    // }
 
 }

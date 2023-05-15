@@ -24,7 +24,7 @@ public class StompChatController {
      */
     @MessageMapping(value = "/chat/enter")
     public void enter(ChatMessageDTO messageDTO) {
-        messageDTO.setMessage(String.format("%s 님이 채팅방에 참여하였습니다.", messageDTO.getWriter()));
+        messageDTO.setMsg(String.format("%s 님이 채팅방에 참여하였습니다.", messageDTO.getUserName()));
         template.convertAndSend(String.format("/sub/chat/room/%s", messageDTO.getRoomId()), messageDTO);
     }
 

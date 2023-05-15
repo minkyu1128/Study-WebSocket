@@ -27,7 +27,7 @@
     <input type='text' id='serverEndPoint' value="${header.host}/ws/chat"/>
     <br/>
     <input type='text' id='userName' value='홍길동'>
-    <input type='button' value='접속' id='btnConnect'>
+    <input type='button' value='채팅방 입장' id='btnConnect'>
     <br/>
     <div id='talk'></div>
     <div id='sendZone'>
@@ -48,20 +48,25 @@
     /**
      * Elements
      */
-    var userName = getId('userName');     //사용자명 입력필드
-    var btnConnect = getId('btnConnect'); //접속 버튼
-    var talk = getId('talk');         //대화내용 출력영역
-    var msg = getId('msg');           //메시지 입력 필드
-    var btnSend = getId('btnSend');   //전송 버튼
+    let userName = getId('userName');     //사용자명 입력필드
+    let btnConnect = getId('btnConnect'); //접속 버튼
+    let talk = getId('talk');         //대화내용 출력영역
+    let msg = getId('msg');           //메시지 입력 필드
+    let btnSend = getId('btnSend');   //전송 버튼
 
     /**
      * WebSocket Client
      * @type {StompClient}
      */
-    var fncOnMessage = (message) => {
-        console.log('fncOnMessage', '----------------------------------------');
-        console.log('message', message);
-        var data = JSON.parse(message.data);
+    let fncConnectCallback = () => {
+        let payload = {};//전송 데이터(JSON)
+        payload.userName = getId('userName').value;
+        payload.roomId = getId('roomId').innerText;
+
+        ws.send('/pub/chat/enter', {'isEnter': true}, JSON.stringify(payload));
+    }
+    let fncOnMessage = (message) => {
+        var data = JSON.parse(message.body);
 
         let id = document.createElement('span');
         id.style = 'font-weight: bold;';
@@ -69,35 +74,31 @@
         let msg = document.createElement('span');
         msg.innerText = data.msg;
         let div = document.createElement('div');
-        div.className = data.userName == userName.value ? 'me' : 'other';
-        div.innerHTML = id.outerHTML;
-        div.innerHTML += '[ ' + data.date + ' ]';
-        div.innerHTML += '<br/>';
+        if (data.date === null) //채팅방 입장인 경우
+            div.className = 'enter';
+        else {  //채팅 메시지인 경우
+            div.className = data.userName == userName.value ? 'me' : 'other';
+            div.innerHTML = id.outerHTML;
+            div.innerHTML += '[ ' + data.date + ' ]';
+            div.innerHTML += '<br/>';
+        }
         div.innerHTML += msg.outerHTML;
 
         talk.innerHTML += div.outerHTML;
         talk.scrollTop = talk.scrollHeight;//스크롤바 하단으로 이동
 
     };
-    var fncConnectCallback = () => {
-        console.log('fncConnectCallback', '----------------------------------------');
-        ws.send('/pub/chat/enter', {}, JSON.stringify({
-            roomId: getId('roomId').value,
-            writer: getId('userName').value
-        }));
-    }
-    var ws = new StompClient({
+    let ws = new StompClient({
         enableLog: true,
-        // wsType: StompClient.wsType.WSSTP,
         wsType: StompClient.wsType.SJSTP,
-        serverEndPoint: document.querySelector('#serverEndPoint').value,
-        onMessage: fncOnMessage,
+        // serverEndPoint: document.querySelector('#serverEndPoint').value,
+        // onMessage: fncOnMessage,
         conn: {
             headers: {'header1': 'test1', 'header2': 'test2'},
             callback: fncConnectCallback,
             sub: {
-                // dest: "/sub/chat/room/" + getId('roomId').value,
-                dest: "/sub/chat/room/${chatRoomDTO.roomId}",
+                // dest: "/sub/chat/room/" + getId('roomId').innerText,
+                dest: "/sub/chat/room/" + getId('roomId').innerText,
                 callback: fncOnMessage
             }
         }
@@ -108,10 +109,7 @@
             payload.userName = getId('userName').value;
             payload.msg = msg.value;
             payload.date = new Date().toLocaleString();
-
-            payload.roomId = getId('roomId').value;
-            payload.writer = getId('userName').value;
-            payload.message = msg.value;
+            payload.roomId = getId('roomId').innerText;
 
             ws.send('/pub/chat/message', {}, JSON.stringify(payload));
         }
@@ -123,8 +121,8 @@
      */
     btnConnect.onclick = () => {
         const selctedOptVal = document.querySelector('#wsType').options[document.querySelector('#wsType').selectedIndex].value;
-        ws.setWsType(StompClient.wsType.valueOf(selctedOptVal));
-        ws.setServerEndPoint(document.querySelector('#serverEndPoint').value);
+        // ws.setWsType(StompClient.wsType.valueOf(selctedOptVal));
+        // ws.setServerEndPoint(document.querySelector('#serverEndPoint').value);
         ws.open(wsType);
     }
     msg.onkeyup = (ev) => {
