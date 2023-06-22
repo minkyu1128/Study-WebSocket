@@ -67,6 +67,22 @@ class WsClient {
             throw "WebSocket This call type is required!!";
         }
 
+        /* ------------------------------------
+         * WebSocket Header에 인증토큰 보내기 위한 방법
+         *  1. this.ws.headers
+         *   -> AI 답변에 따라 해보았으나 되지 않음. stackoverflow 사이트에서도 client가 header에 추가할 방법은 없다고 나옴
+         *  2. cookie 사용
+         *   -> cookie에 토큰 담아 서버에 전달 가능
+         * TODO SockJS 사용 시에는 해보지 않음. 검증필요
+        ------------------------------------ */
+        //헤더방식 fail
+        this.ws.headers = {
+            "X-Test-Header": "hahahaha",
+            "Authorization": "Bearer abcdefghijklmnop"
+        };
+        //cookie 방식 success
+        document.cookie = 'X-TEST-Authorization=hahahahah';
+
         this.ws.onopen = this.onOpen;
         this.ws.onmessage = this.onMessage;
         this.ws.onclose = this.onClose;
